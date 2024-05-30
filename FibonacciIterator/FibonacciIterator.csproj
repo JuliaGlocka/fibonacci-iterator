@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -8,7 +8,7 @@
     <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
     <CodeAnalysisRuleSet>..\code-analysis.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <NoWarn>S3267</NoWarn>
+    <NoWarn>CA1063</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\code-analysis.ruleset" Link="Properties\code-analysis.ruleset" />
