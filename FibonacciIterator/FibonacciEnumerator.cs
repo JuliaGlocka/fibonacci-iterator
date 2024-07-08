@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace FibonacciIterator;
+﻿namespace FibonacciIterator;
 
 /// <summary>
 /// Represents an enumerator object to iterate over the Fibonacci sequence numbers.
@@ -8,7 +6,6 @@ namespace FibonacciIterator;
 public sealed class FibonacciEnumerator
 {
     // TODO Implement an enumerator to iterate over the Fibonacci sequence numbers.
-
     public void Dispose()
     {
         // The method is empty, because there are no additional resources to dispose.
