@@ -4,7 +4,7 @@ Intermediate level task to practice explicit interface implementation and to imp
 
 Estimated time to complete the task - 1h.
 
-The task requires .NET 6 SDK installed.
+The task requires .NET 8 SDK installed.
 
 
 ## Task Description
