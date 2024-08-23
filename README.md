@@ -47,3 +47,15 @@ The iterator consists of two classes - `FibonacciEnumerable` and `FibonacciEnume
 If you are coding in the Visual Studio, you may use the [Implement Interface](https://docs.microsoft.com/en-us/visualstudio/ide/reference/implement-interface) refactoring to enhance your experience with declaring an interface methods in a class.
 
 The `FibonacciEnumerator` class should have only `int` private fields.
+
+**Note**   
+_The solution will not compile until all required types with required members are declared.  For a smoother development experience, we recommend initially declaring all necessary types and creating "stub methods" as follows:_ 
+
+```csharp 
+public returnType MethodName(parameters list) 
+{ 
+    throw new NotImplementedException(); 
+} 
+``` 
+
+_This approach allows you to build and run your project incrementally while implementing each method._ 
