@@ -6,18 +6,18 @@ namespace FibonacciIterator;
 
 public sealed class FibonacciEnumerator : IEnumerator<int>
 {
-    private int _current;    // Current Fibonacci number
-    private int _prev;       // Previous Fibonacci number
-    private int _yielded;    // How many values have been yielded
-    private int _count;      // Total number to yield
-    private int _skip;       // How many to skip
-    private int _started;    // 0 = not started, 1 = started
-    private int _valid;      // 1 = valid position, 0 = not valid
+    // Only int fields!
+    private int _a, _b;         // Fibonacci state
+    private int _index;         // How many in sequence have we advanced (including skips)
+    private int _yielded;       // How many have we yielded to the user
+    private int _count;         // How many to yield to the user
+    private int _skipCount;     // How many to skip at the start
+    private int _started;       // 0 = not started, 1 = started, -1 = finished
 
-    public FibonacciEnumerator(int count, int skip)
+    public FibonacciEnumerator(int count, int skipCount)
     {
         _count = count;
-        _skip = skip;
+        _skipCount = skipCount;
         Reset();
     }
 
@@ -25,8 +25,9 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
     {
         get
         {
-            if (_valid == 0) throw new InvalidOperationException();
-            return _current;
+            if (_started != 1)
+                throw new InvalidOperationException();
+            return _a;
         }
     }
 
@@ -34,45 +35,58 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
 
     public bool MoveNext()
     {
-        if (_yielded >= _count)
-        {
-            _valid = 0;
+        if (_started == -1)
             return false;
-        }
 
         if (_started == 0)
         {
-            // Initialize sequence
-            _current = 0;
-            _prev = 1;
-            // Skip the first _skip items
-            for (int i = 0; i < _skip; i++)
+            // Start and skip skipCount items
+            _a = 0;
+            _b = 1;
+            _index = 0;
+            _yielded = 0;
+
+            while (_index < _skipCount)
             {
-                int temp = _current;
-                _current = _prev;
-                _prev = temp + _prev;
+                int temp = _a + _b;
+                _a = _b;
+                _b = temp;
+                _index++;
             }
+
+            if (_count == 0)
+            {
+                _started = -1;
+                return false;
+            }
+
             _started = 1;
         }
         else
         {
-            int temp = _current;
-            _current = _prev;
-            _prev = temp + _prev;
+            // Advance to next
+            int temp = _a + _b;
+            _a = _b;
+            _b = temp;
+        }
+
+        if (_yielded >= _count)
+        {
+            _started = -1;
+            return false;
         }
 
         _yielded++;
-        _valid = 1;
         return true;
     }
 
     public void Reset()
     {
-        _current = 0;
-        _prev = 1;
+        _a = 0;
+        _b = 1;
+        _index = 0;
         _yielded = 0;
         _started = 0;
-        _valid = 0;
     }
 
     public void Dispose() { }
