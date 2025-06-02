@@ -47,11 +47,15 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
                 throw new InvalidOperationException();
             }
 
+#pragma warning disable SA1101
             return A;
+#pragma warning restore SA1101
         }
     }
 
+#pragma warning disable SA1101
     object IEnumerator.Current => Current;
+#pragma warning restore SA1101
 
     public bool MoveNext()
     {
@@ -65,7 +69,9 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
             return false;
         }
 
+#pragma warning disable SA1101
         if (Started == 0)
+#pragma warning restore SA1101
         {
 #pragma warning disable SA1101
             A = 0;
@@ -94,7 +100,9 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
         }
         else
         {
+#pragma warning disable SA1101
             int temp = A;
+#pragma warning restore SA1101
 #pragma warning disable SA1101
             A = B;
 #pragma warning restore SA1101
