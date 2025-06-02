@@ -1,25 +1,28 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 
 namespace FibonacciIterator;
 
 public sealed class FibonacciEnumerator : IEnumerator<int>
 {
-    // Fields
-    private int _a, _b;
-    private int _index;
-    private int _yielded;
-    private int _count;
-    private int _skipCount;
-    private int _maxToYield;
-    private int _started; // 0 = not started, 1 = started, -1 = finished
+    public int A { get; private set; }
+
+    public int B { get; private set; }
+
+    public int Yielded { get; private set; }
+
+    public int Count { get; }
+
+    public int SkipCount { get; }
+
+    public int MaxToYield { get; }
+
+    public int Started { get; private set; }
 
     public FibonacciEnumerator(int count, int skipCount)
     {
-        _count = count;
-        _skipCount = skipCount;
-        _maxToYield = Math.Max(0, count - skipCount);
+        Count = count;
+        SkipCount = skipCount;
+        MaxToYield = Math.Max(0, count - skipCount);
         Reset();
     }
 
@@ -27,9 +30,9 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
     {
         get
         {
-            if (_started != 1)
+            if (Started != 1)
                 throw new InvalidOperationException();
-            return _a;
+            return A;
         }
     }
 
@@ -37,41 +40,39 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
 
     public bool MoveNext()
     {
-        if (_yielded >= _maxToYield)
+        if (Yielded >= MaxToYield)
         {
-            _started = -1;
+            Started = -1;
             return false;
         }
-        if (_started == 0)
+        if (Started == 0)
         {
-            _a = 0;
-            _b = 1;
-            _index = 0;
-            for (int i = 0; i < _skipCount; i++)
+            A = 0;
+            B = 1;
+            for (int i = 0; i < SkipCount; i++)
             {
-                int temp = _a + _b;
-                _a = _b;
-                _b = temp;
+                int temp = A;
+                A = B;
+                B = temp + B;
             }
-            _started = 1;
+            Started = 1;
         }
         else
         {
-            int temp = _a + _b;
-            _a = _b;
-            _b = temp;
+            int temp = A;
+            A = B;
+            B = temp + B;
         }
-        _yielded++;
+        Yielded++;
         return true;
     }
 
     public void Reset()
     {
-        _a = 0;
-        _b = 1;
-        _index = 0;
-        _yielded = 0;
-        _started = 0;
+        A = 0;
+        B = 1;
+        Yielded = 0;
+        Started = 0;
     }
 
     public void Dispose() { }
