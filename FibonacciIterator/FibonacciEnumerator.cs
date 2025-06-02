@@ -4,24 +4,20 @@ using System.Collections.Generic;
 
 namespace FibonacciIterator;
 
-/// <summary>
-/// Represents an enumerator object to iterate over the Fibonacci sequence numbers.
-/// </summary>
 public sealed class FibonacciEnumerator : IEnumerator<int>
 {
-    private int _current;
-    private int _previous;
-    private int _position; // Position in yield (not in the full sequence)
-    private int _fibIndex; // Position in the full sequence (used for skipping)
-    private readonly int _count;
-    private readonly int _skipCount;
-    private bool _started;
-    private bool _finished;
+    private int _current;    // Current Fibonacci number
+    private int _prev;       // Previous Fibonacci number
+    private int _yielded;    // How many values have been yielded
+    private int _count;      // Total number to yield
+    private int _skip;       // How many to skip
+    private int _started;    // 0 = not started, 1 = started
+    private int _valid;      // 1 = valid position, 0 = not valid
 
-    public FibonacciEnumerator(int count, int skipCount)
+    public FibonacciEnumerator(int count, int skip)
     {
         _count = count;
-        _skipCount = skipCount;
+        _skip = skip;
         Reset();
     }
 
@@ -29,8 +25,7 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
     {
         get
         {
-            if (!_started || _finished)
-                throw new InvalidOperationException();
+            if (_valid == 0) throw new InvalidOperationException();
             return _current;
         }
     }
@@ -39,57 +34,46 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
 
     public bool MoveNext()
     {
-        if (_finished || _position >= _count)
+        if (_yielded >= _count)
         {
-            _finished = true;
+            _valid = 0;
             return false;
         }
 
-        if (!_started)
+        if (_started == 0)
         {
-            // Set to the first Fibonacci number after skipping
+            // Initialize sequence
             _current = 0;
-            _previous = 1;
-            _fibIndex = 0;
-            while (_fibIndex < _skipCount)
+            _prev = 1;
+            // Skip the first _skip items
+            for (int i = 0; i < _skip; i++)
             {
                 int temp = _current;
-                _current = _previous;
-                _previous = checked(temp + _previous); // checked for overflow (optional)
-                _fibIndex++;
+                _current = _prev;
+                _prev = temp + _prev;
             }
-            _started = true;
+            _started = 1;
         }
         else
         {
             int temp = _current;
-            _current = _previous;
-            _previous = checked(temp + _previous); // checked for overflow (optional)
-            _fibIndex++;
+            _current = _prev;
+            _prev = temp + _prev;
         }
 
-        _position++;
-        if (_position > _count)
-        {
-            _finished = true;
-            return false;
-        }
-
+        _yielded++;
+        _valid = 1;
         return true;
     }
 
     public void Reset()
     {
         _current = 0;
-        _previous = 1;
-        _position = 0;
-        _fibIndex = 0;
-        _started = false;
-        _finished = false;
+        _prev = 1;
+        _yielded = 0;
+        _started = 0;
+        _valid = 0;
     }
 
-    public void Dispose()
-    {
-        // No resources to dispose.
-    }
+    public void Dispose() { }
 }
