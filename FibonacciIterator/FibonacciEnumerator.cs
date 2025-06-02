@@ -20,10 +20,18 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
 
     public FibonacciEnumerator(int count, int skipCount)
     {
+#pragma warning disable SA1101
         Count = count;
+#pragma warning restore SA1101
+#pragma warning disable SA1101
         SkipCount = skipCount;
+#pragma warning restore SA1101
+#pragma warning disable SA1101
         MaxToYield = Math.Max(0, count - skipCount);
+#pragma warning restore SA1101
+#pragma warning disable SA1101
         Reset();
+#pragma warning restore SA1101
     }
 
     public int Current
@@ -31,7 +39,10 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
         get
         {
             if (Started != 1)
+            {
                 throw new InvalidOperationException();
+            }
+
             return A;
         }
     }
@@ -45,6 +56,7 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
             Started = -1;
             return false;
         }
+
         if (Started == 0)
         {
             A = 0;
@@ -55,6 +67,7 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
                 A = B;
                 B = temp + B;
             }
+
             Started = 1;
         }
         else
@@ -63,6 +76,7 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
             A = B;
             B = temp + B;
         }
+
         Yielded++;
         return true;
     }
