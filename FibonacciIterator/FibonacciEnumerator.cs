@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FibonacciIterator;
@@ -10,9 +11,12 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
 {
     private int _current;
     private int _previous;
-    private int _position;
+    private int _position; // Position in yield (not in the full sequence)
+    private int _fibIndex; // Position in the full sequence (used for skipping)
     private readonly int _count;
     private readonly int _skipCount;
+    private bool _started;
+    private bool _finished;
 
     public FibonacciEnumerator(int count, int skipCount)
     {
@@ -21,28 +25,57 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
         Reset();
     }
 
-    public int Current => _current;
+    public int Current
+    {
+        get
+        {
+            if (!_started || _finished)
+                throw new InvalidOperationException();
+            return _current;
+        }
+    }
 
     object IEnumerator.Current => Current;
 
     public bool MoveNext()
     {
-        if (_position >= _count)
-            return false;
-
-        if (_position == 0)
+        if (_finished || _position >= _count)
         {
-            // Already at the right spot after skipping
+            _finished = true;
+            return false;
+        }
+
+        if (!_started)
+        {
+            // Set to the first Fibonacci number after skipping
+            _current = 0;
+            _previous = 1;
+            _fibIndex = 0;
+            while (_fibIndex < _skipCount)
+            {
+                int temp = _current;
+                _current = _previous;
+                _previous = checked(temp + _previous); // checked for overflow (optional)
+                _fibIndex++;
+            }
+            _started = true;
         }
         else
         {
             int temp = _current;
-            _current += _previous;
-            _previous = temp;
+            _current = _previous;
+            _previous = checked(temp + _previous); // checked for overflow (optional)
+            _fibIndex++;
         }
 
         _position++;
-        return _position <= _count;
+        if (_position > _count)
+        {
+            _finished = true;
+            return false;
+        }
+
+        return true;
     }
 
     public void Reset()
@@ -50,19 +83,13 @@ public sealed class FibonacciEnumerator : IEnumerator<int>
         _current = 0;
         _previous = 1;
         _position = 0;
-
-        // Skip the specified number of elements
-        for (int i = 0; i < _skipCount; i++)
-        {
-            int temp = _current;
-            _current += _previous;
-            _previous = temp;
-        }
+        _fibIndex = 0;
+        _started = false;
+        _finished = false;
     }
 
     public void Dispose()
     {
-        // The method is empty, because there are no additional resources to dispose.
-        // See "Notes to Implementers" - https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerator-1?view=net-6.0#notes-to-implementers
+        // No resources to dispose.
     }
 }

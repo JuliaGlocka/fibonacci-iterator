@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FibonacciIterator;
@@ -13,6 +14,11 @@ public sealed class FibonacciEnumerable : IEnumerable<int>
 
     public FibonacciEnumerable(int count = int.MaxValue, int skipCount = 0)
     {
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count));
+        if (skipCount < 0)
+            throw new ArgumentOutOfRangeException(nameof(skipCount));
+
         _count = count;
         _skipCount = skipCount;
     }
@@ -22,8 +28,5 @@ public sealed class FibonacciEnumerable : IEnumerable<int>
         return new FibonacciEnumerator(_count, _skipCount);
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
